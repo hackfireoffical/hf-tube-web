@@ -23,26 +23,21 @@ export function formatViews(n?: number, text?: string) {
   if (typeof n === "number" && Number.isFinite(n) && n > 0) {
     return new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(n) + " views";
   }
-  if (text && /^[\\x00-\\x7F]+$/.test(text.trim()) && !/^0\\s*(views?)?$/i.test(text.trim())) return text;
-  if (n === 0) return "0 views";\n  if (text) return "No views";
-  return "View count unavailable";
+  if (n === 0) return "0 views";
+  if (text && !/[^\x00-\x7F]/.test(text.trim()) && !/^0\s*(views?)?$/i.test(text.trim())) return text;
+  return text ? "No views" : "View count unavailable";
 }
-
 export function formatPublished(timestamp?: number, fallback?: string) {
   if (typeof timestamp === "number" && Number.isFinite(timestamp) && timestamp > 0) {
     const milliseconds = timestamp > 1e12 ? timestamp : timestamp * 1000;
     const seconds = Math.max(0, Math.floor((Date.now() - milliseconds) / 1000));
     if (seconds < 45) return "Just now";
-    const units: [number, Intl.RelativeTimeFormatUnit][] = [
-      [86400, "day"], [3600, "hour"], [60, "minute"]
-    ];
+    const units: [number, Intl.RelativeTimeFormatUnit][] = [[86400, "day"], [3600, "hour"], [60, "minute"]];
     const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
-    for (const [size, unit] of units) {
-      if (seconds >= size) return formatter.format(-Math.floor(seconds / size), unit);
-    }
+    for (const [size, unit] of units) if (seconds >= size) return formatter.format(-Math.floor(seconds / size), unit);
     return "Just now";
   }
-  if (fallback && /^[\\x00-\\x7F]+$/.test(fallback.trim()) && !/^0\\s*seconds? ago$/i.test(fallback.trim())) return fallback;
+  if (fallback && !/[^\x00-\x7F]/.test(fallback.trim()) && !/^0\s*seconds? ago$/i.test(fallback.trim())) return fallback;
   return "Date unavailable";
 }
 export function formatDuration(n?: number) {
