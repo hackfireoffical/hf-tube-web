@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowLeft, Play } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import type { Video } from "@/lib/types";
 import { formatDuration, formatViews, thumbnail } from "@/lib/types";
 
@@ -19,7 +19,6 @@ type Channel = {
 };
 
 export default function ChannelPage({ params }: { params: Promise<{ id: string }> }) {
-  const [channelId, setChannelId] = useState("");
   const [channel, setChannel] = useState<Channel | null>(null);
   const [videos, setVideos] = useState<Video[]>([]);
   const [error, setError] = useState("");
@@ -29,7 +28,6 @@ export default function ChannelPage({ params }: { params: Promise<{ id: string }
     let active = true;
     void params.then(({ id }) => {
       if (!active) return;
-      setChannelId(id);
       fetch("/api/channel/" + encodeURIComponent(id))
         .then(async response => {
           const data = await response.json();
