@@ -42,7 +42,7 @@ export function formatPublished(timestamp?: number, fallback?: string) {
     }
     return "Just now";
   }
-  if (fallback && !/^0\\s*seconds? ago$/i.test(fallback.trim())) return fallback;
+  if (fallback && /^[\\x00-\\x7F]+$/.test(fallback.trim()) && !/^0\\s*seconds? ago$/i.test(fallback.trim())) return fallback;
   return "Date unavailable";
 }
 export function formatDuration(n?: number) {
