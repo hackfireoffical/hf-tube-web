@@ -9,8 +9,9 @@ A mobile-first independent video frontend built with Next.js and public Invidiou
 - **Milestone 3:** channel profiles, channel metadata, and channel video grids with links from discovery and watch pages.
 - **Milestone 4:** paginated channel video browsing, related-video recommendations, and a local watch-history page.
 - **Milestone 5:** a vertical, snap-scrolling short-video feed with lazy-loaded playback and muted autoplay where supported.
+- **Milestone 6:** browser-local channel subscriptions, channel subscribe/unsubscribe controls, and a combined subscriptions feed.
 
-Not implemented yet: Google sign-in, official personalized YouTube recommendations, subscriptions, playlist management, and cross-device sync. The short-video feed searches public Invidious results and filters videos to 60 seconds or less; it is not an official YouTube Shorts feed, and availability depends on public instances. Related videos and channel pagination depend on the selected Invidious instance exposing the relevant endpoints/data.
+Not implemented yet: Google sign-in, official personalized YouTube recommendations, playlist management, and cross-device sync. Subscriptions are stored only in the current browser and are not connected to a Google account. The short-video feed searches public Invidious results and filters videos to 60 seconds or less; it is not an official YouTube Shorts feed, and availability depends on public instances. Related videos and channel pagination depend on the selected Invidious instance exposing the relevant endpoints/data.
 
 ## Stack
 Next.js App Router, TypeScript, Tailwind CSS, Vercel, public Invidious API instances.
