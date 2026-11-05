@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
   const sort = request.nextUrl.searchParams.get("sort") || "relevance";
   const date = request.nextUrl.searchParams.get("date") || "";
   const duration = request.nextUrl.searchParams.get("duration") || "";
+  const type = request.nextUrl.searchParams.get("type") || "video";
   if (!q) return NextResponse.json({ results: [], error: "Enter a search term." }, { status: 400 });
   const allowed = new Set(["relevance", "rating", "upload_date", "view_count"]);
   const sortBy = allowed.has(sort) ? sort : "relevance";
@@ -13,8 +14,9 @@ export async function GET(request: NextRequest) {
   const allowedDurations = new Set(["short", "medium", "long"]);
   const dateFilter = allowedDates.has(date) ? date : "";
   const durationFilter = allowedDurations.has(duration) ? duration : "";
+  const searchType = type === "channel" ? "channel" : "video";
   try {
-    const params = new URLSearchParams({ q, type: "video", page: String(page), sort_by: sortBy });
+    const params = new URLSearchParams({ q, type: searchType, page: String(page), sort_by: sortBy });
     if (dateFilter) params.set("date", dateFilter);
     if (durationFilter) params.set("duration", durationFilter);
     const path = "/api/v1/search?" + params.toString();
