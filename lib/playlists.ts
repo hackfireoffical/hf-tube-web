@@ -22,3 +22,9 @@ export function removeVideoFromPlaylist(id: string, videoId: string) {
   writePlaylists(readPlaylists().map(p => p.id === id ? { ...p, videos: p.videos.filter(v => v.videoId !== videoId) } : p));
 }
 export function deletePlaylist(id: string) { writePlaylists(readPlaylists().filter(p => p.id !== id)); }
+
+export function renamePlaylist(id: string, name: string) {
+  const clean = name.trim();
+  if (!clean) return;
+  writePlaylists(readPlaylists().map(p => p.id === id ? { ...p, name: clean } : p));
+}
