@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { invidious } from "@/lib/invidious";
 
-export const revalidate = 120;
+export const dynamic = "force-dynamic";\nexport const revalidate = 0;
 
 export async function GET() {
   try {
@@ -12,7 +12,7 @@ export async function GET() {
     return NextResponse.json({
       videos: result.data,
       instance: result.instance,
-      fallback: result.instance !== "https://invidious.tiekoetter.com"
+      fallback: false
     });
   } catch (error) {
     return NextResponse.json({
