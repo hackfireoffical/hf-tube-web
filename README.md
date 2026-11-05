@@ -1,50 +1,37 @@
 # HF Tube Web
 
-A mobile-first, YouTube-inspired video frontend with an independent HF Tube identity. The project is designed to use public Invidious instances instead of requiring you to operate a VPS.
+A mobile-first independent video frontend built with Next.js and public Invidious instances. A VPS is not required.
 
-## Current status
+## Milestones
 
-**Milestone 1 — foundation:** responsive dark UI, category chips, video cards, and a server-side trending-feed route with multiple public-instance fallbacks.
+- **Milestone 1:** responsive HF Tube discovery UI and trending feed.
+- **Milestone 2:** search results, dedicated watch page, HTML5 playback, playback speed, comments where available, local watch history, and a format selector with provider-reported or estimated size.
 
-This is an early foundation, not a finished YouTube replacement yet. Search, Shorts playback, watch pages, Google sign-in, account sync, history, subscriptions, playlists, and downloads are planned next. The current video cards link out to YouTube until the dedicated player is implemented.
+Not implemented yet: Google sign-in, official personalized YouTube recommendations, full Shorts feed, channel pages, subscriptions, playlist management, and cross-device sync.
 
 ## Stack
+Next.js App Router, TypeScript, Tailwind CSS, Vercel, public Invidious API instances.
 
-- Next.js App Router + TypeScript
-- Tailwind CSS
-- Vercel deployment
-- Public Invidious API instances (JSON requests only; video media is not proxied through Vercel)
-
-## Run locally
-
-1. Install Node.js 20.9 or newer.
+## Run
+1. Install Node.js 20.9+.
 2. Run `npm install`.
-3. Copy `.env.example` to `.env.local` if you want to configure instances.
-4. Run `npm run dev` and open `http://localhost:3000`.
+3. Optionally copy `.env.example` to `.env.local` and set `INVIDIOUS_INSTANCES`.
+4. Run `npm run dev`.
 
-## Instance configuration
+## Public instances
+A small fallback list is included. Public instances are community-operated and may be offline, rate-limit requests, disable endpoints, or return media formats that do not play in every browser. Set `INVIDIOUS_INSTANCES` to comma-separated HTTPS instance URLs to choose preferred sources.
 
-Set `INVIDIOUS_INSTANCES` to a comma-separated list of public HTTPS Invidious instances. The app also has a short built-in fallback list. Public instances are community-operated and can be unavailable, rate-limit requests, or disable endpoints. Check their terms and API availability before relying on them.
+## Playback and downloads
+The watch page uses direct format URLs returned by the selected Invidious instance; Vercel does not proxy media. Only formats actually returned by the backend are shown. File sizes use provider metadata when available and otherwise a bitrate-based estimate. Some browsers open the media URL instead of saving it automatically. Only download content you have permission to save and follow the source provider's terms.
 
-## Google account integration
+## Account features
+Google OAuth is not implemented. Never ask for or store a Google password. YouTube Data API access does not provide the same personalized Home recommendations as the official YouTube app. Watch and search history currently stay in the current browser's local storage.
 
-Google sign-in is **not implemented yet**. Future account integration must use OAuth with the minimum required scopes and must never ask for a Google password. YouTube Data API access does not provide every feature of the official YouTube app, including its personalized home recommendation feed. Account features will be labeled according to what Google's APIs actually support.
+## Deploy
+Import this repository into Vercel as a Next.js app. Add `INVIDIOUS_INSTANCES` in Project Settings → Environment Variables if desired. Connect a custom domain in Vercel's Domains settings.
 
-## Downloads
-
-Download controls are a planned feature. The app must only offer formats and direct media URLs actually returned by the selected backend, display estimated/known file size accurately, and respect applicable rights and service terms. Do not claim an unavailable format or fabricate file sizes.
-
-## Deployment
-
-Import this repository into Vercel, select the Next.js preset, and deploy. Add `INVIDIOUS_INSTANCES` in Project Settings → Environment Variables if you want to override the defaults. A custom domain can be connected later in Vercel's Domains settings.
-
-## Privacy principles
-
-- No ad network, analytics, or tracking by default.
-- No app-owned account or database required for local-only preferences.
-- Do not store Google access tokens in localStorage.
-- Video media should load directly from the media provider, not through Vercel serverless functions.
+## Privacy
+No analytics, ad network, or app-owned database. No Google token storage. Media is loaded directly from the provider.
 
 ## License
-
 MIT
