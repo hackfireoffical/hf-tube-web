@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { Compass, Home, Menu, PlaySquare, Search, UserCircle, Video as VideoIcon, Zap, ListVideo, X, Clock3 } from "lucide-react";
+import { Compass, Home, Menu, PlaySquare, Search, UserCircle, Video as VideoIcon, Zap, ListVideo, X, Clock3, Settings } from "lucide-react";
 import type { Video } from "@/lib/types";
 import { formatDuration, formatViews, thumbnail } from "@/lib/types";
 
@@ -75,7 +75,7 @@ export default function HomePage() {
         <a href="/" className="flex items-center gap-2 text-xl font-black tracking-tight"><span className="grid h-7 w-8 place-items-center rounded-lg bg-[#3ea6ff] text-sm text-black">HF</span>tube</a>
       </div>
       <form action="/search" className="mx-5 hidden max-w-xl flex-1 items-center rounded-full border border-white/15 bg-[#181818] px-4 md:flex"><Search size={18} className="text-white/45"/><input name="q" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search videos" className="h-10 w-full bg-transparent px-3 text-sm outline-none placeholder:text-white/40"/><button aria-label="Search"><Search size={18}/></button></form>
-      <div className="flex items-center gap-2"><a href="/search" className="rounded-full p-2 md:hidden" aria-label="Search"><Search/></a><a href="/history" className="rounded-full p-2 text-white/80 hover:bg-white/10" aria-label="Watch history"><Clock3 size={21}/></a><a href="/playlists" className="rounded-full bg-[#242424] p-2 text-[#3ea6ff]" aria-label="Your playlists"><UserCircle size={22}/></a></div>
+      <div className="flex items-center gap-2"><a href="/search" className="rounded-full p-2 md:hidden" aria-label="Search"><Search/></a><a href="/history" className="rounded-full p-2 text-white/80 hover:bg-white/10" aria-label="Watch history"><Clock3 size={21}/></a><a href="/playlists" className="rounded-full bg-[#242424] p-2 text-[#3ea6ff]" aria-label="Your playlists"><UserCircle size={22}/></a><a href="/settings" className="rounded-full p-2 text-white/75 hover:bg-white/10" aria-label="Settings"><Settings size={21}/></a></div>
     </header>
 
     <div className="mx-auto max-w-[1500px] md:flex">
@@ -85,7 +85,7 @@ export default function HomePage() {
         <NavIcon href="/subscriptions" icon={<PlaySquare/>} label="Subscriptions" expanded={sidebarOpen}/>
         <NavIcon href="/playlists" icon={<ListVideo/>} label="Playlists" expanded={sidebarOpen}/>
         <NavIcon href="/history" icon={<Clock3/>} label="Watch history" expanded={sidebarOpen}/>
-        <div className="mt-auto"><NavIcon href="/search" icon={<Compass/>} label="Explore" expanded={sidebarOpen}/></div>
+        <div className="mt-auto"><NavIcon href="/search" icon={<Compass/>} label="Explore" expanded={sidebarOpen}/><NavIcon href="/settings" icon={<Settings/>} label="Settings" expanded={sidebarOpen}/></div>
       </aside>
 
       <section className="min-w-0 flex-1 px-4 pt-4 md:px-7">
