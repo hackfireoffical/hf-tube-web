@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { invidiousVideo } from "@/lib/invidious";
+import { invidiousVideo, getInstances } from "@/lib/invidious";
 import { getPipedVideo } from "@/lib/piped";
 
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
@@ -17,6 +17,11 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
     return NextResponse.json({ video: result.video, instance: result.instance, provider: "piped", fallback: true });
   } catch (error) {
     const pipedError = error instanceof Error ? error.message : "Piped unavailable.";
-    return NextResponse.json({ error: invidiousError + " | " + pipedError }, { status: 503 });
+    const embedUrls = getInstances().map(instance => instance + "/embed/" + encodeURIComponent(id));
+    return NextResponse.json({
+      embedUrls,
+      error: "The provider APIs are blocking server-side requests. Trying the provider player directly in your browser.",
+      diagnostic: invidiousError + " | " + pipedError
+    });
   }
 }
