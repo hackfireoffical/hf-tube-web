@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Bell, BellRing } from "lucide-react";
+import { isSubscribed, toggleSubscription } from "@/lib/subscriptions";
 import type { Video } from "@/lib/types";
 import { formatDuration, formatViews, thumbnail } from "@/lib/types";
 
@@ -23,12 +24,14 @@ export default function ChannelPage({ params }: { params: Promise<{ id: string }
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
 
   useEffect(() => {
     let active = true;
     void params.then(async ({ id }) => {
       if (!active) return;
       setChannelId(id);
+      setSubscribed(isSubscribed(id));
       try {
         const response = await fetch("/api/channel/" + encodeURIComponent(id) + "?page=1");
         const data = await response.json();
