@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { Bell, Compass, Download, Home, Menu, PlaySquare, Search, Settings, UserCircle, Video as VideoIcon, Zap } from "lucide-react";
+import { Bell, Compass, Download, Home, Menu, PlaySquare, Search, Settings, UserCircle, Video as VideoIcon, Zap, ListVideo } from "lucide-react";
 import type { Video } from "@/lib/types";
 import { formatDuration, formatViews, thumbnail } from "@/lib/types";
 const categories = ["All", "Today", "Gaming", "Music", "Minecraft", "Technology", "Live", "Mixes"];
@@ -26,7 +26,7 @@ export default function HomePage() {
       <div className="flex items-center gap-2"><a href="/search" className="rounded-full p-2 md:hidden" aria-label="Search"><Search/></a><button className="rounded-full p-2 text-white/80 hover:bg-white/10" aria-label="Notifications"><Bell size={21}/></button><button className="rounded-full bg-[#242424] p-2 text-[#3ea6ff]" aria-label="Account"><UserCircle size={22}/></button></div>
     </header>
     <div className="mx-auto max-w-[1500px] md:flex">
-      <aside className="sticky top-16 hidden h-[calc(100vh-64px)] w-20 shrink-0 flex-col items-center gap-7 border-r border-white/[.06] py-7 lg:flex"><NavIcon icon={<Home/>} label="Home" active/><NavIcon href="/shorts" icon={<Zap/>} label="Shorts"/><NavIcon href="/subscriptions" icon={<PlaySquare/>} label="Subscriptions"/><NavIcon href="/history" icon={<UserCircle/>} label="You"/><div className="mt-auto"><NavIcon icon={<Settings/>} label="Settings"/></div></aside>
+      <aside className="sticky top-16 hidden h-[calc(100vh-64px)] w-20 shrink-0 flex-col items-center gap-7 border-r border-white/[.06] py-7 lg:flex"><NavIcon icon={<Home/>} label="Home" active/><NavIcon href="/shorts" icon={<Zap/>} label="Shorts"/><NavIcon href="/subscriptions" icon={<PlaySquare/>} label="Subscriptions"/><NavIcon href="/playlists" icon={<ListVideo/>} label="Playlists"/><NavIcon href="/history" icon={<UserCircle/>} label="You"/><div className="mt-auto"><NavIcon icon={<Settings/>} label="Settings"/></div></aside>
       <section className="min-w-0 flex-1 px-4 pt-4 md:px-7">
         <div className="mb-5 flex gap-2 overflow-x-auto pb-2 hide-scrollbar">{categories.map(c=><button key={c} onClick={()=>setActive(c)} className={`shrink-0 rounded-lg px-4 py-2 text-sm font-semibold transition ${active===c?"bg-white text-black":"bg-[#242424] text-white hover:bg-[#333]"}`}>{c}</button>)}</div>
         <div className="mb-7 flex items-center justify-between"><div><p className="text-xs font-bold uppercase tracking-[.22em] text-[#3ea6ff]">Discover</p><h1 className="mt-1 text-2xl font-bold tracking-tight">Your next watch.</h1></div><span className="hidden items-center gap-2 text-xs text-white/40 sm:flex"><span className="h-2 w-2 rounded-full bg-emerald-400"/>{instance ? "Connected to an instance" : "Finding a source"}</span></div>
@@ -37,7 +37,7 @@ export default function HomePage() {
         <footer className="mt-16 border-t border-white/[.07] py-6 text-xs text-white/35">HF Tube · Independent frontend · Powered by community Invidious instances</footer>
       </section>
     </div>
-    <nav className="fixed bottom-0 z-40 flex h-[68px] w-full items-center justify-around border-t border-white/10 bg-[#101010]/95 px-2 backdrop-blur lg:hidden"><MobileNav icon={<Home/>} label="Home" active/><MobileNav href="/shorts" icon={<Zap/>} label="Shorts"/><button className="grid h-11 w-11 place-items-center rounded-full bg-[#252525] text-[#3ea6ff]"><span className="text-2xl">＋</span></button><MobileNav href="/subscriptions" icon={<PlaySquare/>} label="Subscriptions"/><MobileNav href="/history" icon={<UserCircle/>} label="You"/></nav>
+    <nav className="fixed bottom-0 z-40 flex h-[68px] w-full items-center justify-around border-t border-white/10 bg-[#101010]/95 px-2 backdrop-blur lg:hidden"><MobileNav icon={<Home/>} label="Home" active/><MobileNav href="/shorts" icon={<Zap/>} label="Shorts"/><MobileNav href="/playlists" icon={<ListVideo/>} label="Playlists"/><MobileNav href="/subscriptions" icon={<PlaySquare/>} label="Subscriptions"/><MobileNav href="/history" icon={<UserCircle/>} label="You"/></nav>
   </main>;
 }
 function NavIcon({icon,label,active=false,href="/"}:{icon:React.ReactNode;label:string;active?:boolean;href?:string}){return <a href={href} className={`flex flex-col items-center gap-1 text-[10px] ${active?"text-[#3ea6ff]":"text-white/55 hover:text-white"}`}>{icon}<span>{label}</span></a>}
