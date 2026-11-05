@@ -10,7 +10,8 @@ export default function SearchPage() {
   async function runSearch(q:string,order:string,page:number,dateFilter=date,durationFilter=duration) {
     setLoading(true);setError("");
     try {
-      const params=new URLSearchParams({q,sort:order,page:String(page)});if(dateFilter)params.set("date",dateFilter);if(durationFilter)params.set("duration",durationFilter);\n      const response=await fetch("/api/search?"+params.toString());
+      const params=new URLSearchParams({q,sort:order,page:String(page)});if(dateFilter)params.set("date",dateFilter);if(durationFilter)params.set("duration",durationFilter);;
+      const response=await fetch("/api/search?"+params.toString());
       const data=await response.json();if(!response.ok)throw new Error(data.error||"Search failed.");
       setResults(old=>page===1?data.results:[...old,...data.results]);setPage(page);
       try {const old=JSON.parse(localStorage.getItem("hf-search-history")||"[]") as string[];localStorage.setItem("hf-search-history",JSON.stringify([q,...old.filter(x=>x!==q)].slice(0,30)));}catch{}
