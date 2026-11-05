@@ -87,6 +87,22 @@ export default function HomePage() {
         <NavIcon href="/history" icon={<Clock3/>} label="Watch history" expanded={sidebarOpen}/>
         <div className="mt-auto"><NavIcon href="/search" icon={<Compass/>} label="Explore" expanded={sidebarOpen}/><NavIcon href="/settings" icon={<Settings/>} label="Settings" expanded={sidebarOpen}/></div>
       </aside>
+      {sidebarOpen && <div className="fixed inset-0 z-50 bg-black/70 lg:hidden" onClick={()=>setSidebarOpen(false)}>
+        <div className="h-full w-72 max-w-[85vw] border-r border-white/10 bg-[#151515] p-5 shadow-2xl" onClick={e=>e.stopPropagation()}>
+          <div className="mb-6 flex items-center justify-between"><span className="text-lg font-black">HF<span className="text-[#3ea6ff]">tube</span></span><button onClick={()=>setSidebarOpen(false)} aria-label="Close menu" className="rounded-full p-2 hover:bg-white/10"><X/></button></div>
+          <div className="space-y-2">
+            {[
+              {href:"/",label:"Home",icon:<Home/>},
+              {href:"/shorts",label:"Shorts",icon:<Zap/>},
+              {href:"/subscriptions",label:"Subscriptions",icon:<PlaySquare/>},
+              {href:"/playlists",label:"Playlists",icon:<ListVideo/>},
+              {href:"/history",label:"Watch history",icon:<Clock3/>},
+              {href:"/search",label:"Explore",icon:<Compass/>},
+              {href:"/settings",label:"Settings",icon:<Settings/>}
+            ].map(item=><a key={item.href} href={item.href} onClick={()=>setSidebarOpen(false)} className="flex items-center gap-4 rounded-xl px-4 py-3 text-sm text-white/75 hover:bg-white/10 hover:text-white">{item.icon}<span>{item.label}</span></a>)}
+          </div>
+        </div>
+      </div>}
 
       <section className="min-w-0 flex-1 px-4 pt-4 md:px-7">
         <div className="mb-5 flex gap-2 overflow-x-auto pb-2 hide-scrollbar">{categories.map(c=><button key={c} onClick={()=>chooseCategory(c)} className={`shrink-0 rounded-lg px-4 py-2 text-sm font-semibold transition ${active===c?"bg-white text-black":"bg-[#242424] text-white hover:bg-[#333]"}`}>{c}</button>)}</div>
