@@ -15,14 +15,12 @@ export function getInstances() {
 
 export async function invidious<T>(path: string): Promise<{ data: T; instance: string }> {
   const instances = getInstances();
-  const errors: string[] = [];
-
-  // Try instances concurrently so one slow or unreachable host does not block the feed.
+  const controller = new AbortController();
   const attempts = instances.map(async instance => {
     const response = await fetch(instance + path, {
-      headers: { "User-Agent": "HF-Tube/0.3 (community frontend)" },
+      headers: { "User-Agent": "HF-Tube/0.4 (community frontend)" },
       cache: "no-store",
-      signal: AbortSignal.timeout(7000)
+      signal: AbortSignal.any([controller.signal, AbortSignal.timeout(7000)])
     });
     if (!response.ok) throw new Error(instance + " returned HTTP " + response.status);
     const data = await response.json() as T;
@@ -30,10 +28,14 @@ export async function invidious<T>(path: string): Promise<{ data: T; instance: s
     return { data, instance };
   });
 
-  const settled = await Promise.allSettled(attempts);
-  for (const result of settled) {
-    if (result.status === "fulfilled") return result.value;
-    errors.push(result.reason instanceof Error ? result.reason.message : "Request failed");
+  try {
+    // Return as soon as the first instance provides valid JSON; cancel slower requests.
+    const result = await Promise.any(attempts);
+    controller.abort();
+    return result;
+  } catch (error) {
+    const reasons = error instanceof AggregateError ? error.errors : [error];
+    const messages = reasons.map(reason => reason instanceof Error ? reason.message : "Request failed");
+    throw new Error("No available Invidious instance responded. " + messages.join("; "));
   }
-  throw new Error("No available Invidious instance responded. " + errors.join("; "));
 }
