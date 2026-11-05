@@ -23,8 +23,8 @@ export function formatViews(n?: number, text?: string) {
   if (typeof n === "number" && Number.isFinite(n) && n > 0) {
     return new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(n) + " views";
   }
-  if (text && !/^0\\s*(views?)?$/i.test(text.trim())) return text;
-  if (n === 0) return "0 views";
+  if (text && /^[\\x00-\\x7F]+$/.test(text.trim()) && !/^0\\s*(views?)?$/i.test(text.trim())) return text;
+  if (n === 0) return "0 views";\n  if (text) return "No views";
   return "View count unavailable";
 }
 
