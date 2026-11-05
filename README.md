@@ -5,9 +5,11 @@ A mobile-first independent video frontend built with Next.js and public Invidiou
 ## Milestones
 
 - **Milestone 1:** responsive HF Tube discovery UI and trending feed.
-- **Milestone 2:** search results, dedicated watch page, HTML5 playback, playback speed, comments where available, local watch history, and a format selector with provider-reported or estimated size.\n- **Milestone 3:** channel profiles, channel metadata, and channel video grids with links from discovery and watch pages.
+- **Milestone 2:** search results, dedicated watch page, HTML5 playback, playback speed, comments where available, local watch history, and provider-reported or estimated download sizes.
+- **Milestone 3:** channel profiles, channel metadata, and channel video grids with links from discovery and watch pages.
+- **Milestone 4:** paginated channel video browsing and related-video recommendations on supported watch pages.
 
-Not implemented yet: Google sign-in, official personalized YouTube recommendations, full Shorts feed, subscriptions, playlist management, and cross-device sync. Channel profile pages and their first page of videos are available when the selected Invidious instance supports those endpoints.
+Not implemented yet: Google sign-in, official personalized YouTube recommendations, a full Shorts feed, subscriptions, playlist management, and cross-device sync. Related videos and channel pagination depend on the selected Invidious instance exposing the relevant endpoints/data.
 
 ## Stack
 Next.js App Router, TypeScript, Tailwind CSS, Vercel, public Invidious API instances.
