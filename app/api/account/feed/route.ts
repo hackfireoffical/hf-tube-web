@@ -42,7 +42,8 @@ export async function GET(request: NextRequest) {
   try {
     const subscriptions = await youtube("subscriptions?part=snippet&mine=true&maxResults=30", fresh.accessToken);
     const subscriptionItems = Array.isArray(subscriptions.items) ? subscriptions.items : [];
-    const allChannelIds = subscriptionItems.map((item: any) => item.snippet?.resourceId?.channelId).filter(Boolean);\n    const channelIds = allChannelIds.slice(0, 30);
+    const allChannelIds = subscriptionItems.map((item: any) => item.snippet?.resourceId?.channelId).filter(Boolean);
+    const channelIds = allChannelIds.slice(0, 30);
     const channelDetails = channelIds.length
       ? await youtube("channels?part=snippet,contentDetails&id=" + encodeURIComponent(channelIds.join(",")), fresh.accessToken)
       : { items: [] };
@@ -101,7 +102,8 @@ export async function GET(request: NextRequest) {
       account: { email: fresh.email, name: fresh.name, picture: fresh.picture },
       channels: channels.map(({ authorId, author, avatar }: any) => ({ authorId, author, avatar })),
       videos,
-      nextPageToken: subscriptions.nextPageToken || null,\n      limitedToFirst30Channels: allChannelIds.length > 30
+      nextPageToken: subscriptions.nextPageToken || null,
+      limitedToFirst30Channels: allChannelIds.length > 30
     });
     if (fresh.accessToken !== session.accessToken) setGoogleSessionCookie(response, fresh);
     return response;
