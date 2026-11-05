@@ -13,6 +13,7 @@ A mobile-first independent video frontend built with Next.js and public Invidiou
 - **Milestone 7:** browser-local playlists, save-to-playlist controls, per-video selection, resolution/size choices, and playlist batch-download actions.
 - **Milestone 10:** live search suggestions plus provider-backed sorting, upload-date, duration, and video/channel type filters.
 - **Milestone 11:** clearer download format labels and size provenance (provider-reported, estimated, or unavailable) on watch and playlist pages.
+- **Milestone 12:** searchable local watch history, video thumbnails, individual history removal, and clear-all confirmation.
 
 Not implemented yet: Google sign-in, official personalized YouTube recommendations, cross-device sync. Subscriptions are stored only in the current browser and are not connected to a Google account. The short-video feed searches public Invidious results and filters videos to 60 seconds or less; it is not an official YouTube Shorts feed, and availability depends on public instances. Related videos and channel pagination depend on the selected Invidious instance exposing the relevant endpoints/data.
 
