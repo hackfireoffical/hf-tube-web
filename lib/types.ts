@@ -12,6 +12,7 @@ export type VideoFormat = {
 export type VideoDetails = Video & {
   likeCount?: number; subCountText?: string; formatStreams?: VideoFormat[];
   adaptiveFormats?: VideoFormat[];
+  recommendedVideos?: Video[];
   captions?: { languageCode?: string; language_code?: string; label: string; url: string }[];
 };
 export function thumbnail(video: Video) {
