@@ -1,6 +1,6 @@
 "use client";
 import { ChangeEvent, useEffect, useState } from "react";
-import { ArrowLeft, Download, Settings, Trash2, Upload } from "lucide-react";
+import { ArrowLeft, Download, Settings, Trash2, Upload, LogIn, LogOut, UserCircle } from "lucide-react";
 import { DEFAULT_PREFERENCES, readPreferences, savePreferences, type PlaybackPreferences } from "@/lib/preferences";
 
 const STORAGE_KEYS = ["hf-playback-preferences", "hf-watch-history", "hf-search-history", "hf-subscriptions", "hf-playlists", "hf-playback-queue"];
@@ -9,7 +9,26 @@ export default function SettingsPage() {
   const [prefs, setPrefs] = useState<PlaybackPreferences>(DEFAULT_PREFERENCES);
   const [ready, setReady] = useState(false);
   const [message, setMessage] = useState("");
-  useEffect(() => { setPrefs(readPreferences()); setReady(true); }, []);
+  const [account, setAccount] = useState<{email:string;name:string;picture?:string}|null>(null);
+  const [accountLoading, setAccountLoading] = useState(true);
+  useEffect(() => {
+    setPrefs(readPreferences());
+    const status = new URLSearchParams(window.location.search).get("google");
+    if (status === "not-configured") setMessage("Google sign-in needs OAuth credentials and an encryption secret in your hosting environment.");
+    else if (status && status !== "connected") setMessage("Google sign-in could not finish. Check your OAuth setup and try again.");
+    fetch("/api/account/me").then(async response => {
+      if (!response.ok) return null;
+      const data = await response.json();
+      return data.connected ? data.account : null;
+    }).then(setAccount).catch(()=>setAccount(null)).finally(()=>{setAccountLoading(false);setReady(true);});
+  }, []);
+
+  async function disconnectGoogle() {
+    if (!window.confirm("Disconnect this Google account from HF Tube?")) return;
+    await fetch("/api/account/disconnect", { method: "POST" });
+    setAccount(null);
+    setMessage("Google account disconnected from this browser.");
+  }
 
   function update(next: PlaybackPreferences) {
     setPrefs(next);
@@ -82,6 +101,13 @@ export default function SettingsPage() {
       <p className="mt-2 text-sm text-white/45">These preferences and data are stored locally in this browser. They are not synced to a Google account.</p>
 
       <section className="mt-8 rounded-2xl border border-white/[.07] bg-[#181818] p-5">
+        <h2 className="text-lg font-semibold">Google account</h2>
+        <p className="mt-1 text-sm text-white/45">Optional read-only access to your YouTube subscriptions and channel uploads. HF Tube never asks for your Google password.</p>
+        {accountLoading ? <p className="mt-4 text-sm text-white/45">Checking account connection…</p> : account ? <div className="mt-4 flex flex-wrap items-center gap-3"><div className="flex min-w-0 flex-1 items-center gap-3">{account.picture ? <img src={account.picture} alt="" className="h-11 w-11 rounded-full"/> : <UserCircle size={34} className="text-white/45"/>}<span className="min-w-0"><span className="block truncate font-semibold">{account.name}</span><span className="block truncate text-xs text-white/45">{account.email}</span></span></div><button onClick={disconnectGoogle} className="inline-flex items-center gap-2 rounded-full bg-[#303030] px-4 py-2.5 text-sm hover:bg-[#3a3a3a]"><LogOut size={16}/>Disconnect</button></div> : <div className="mt-4"><a href="/api/auth/google/start" className="inline-flex items-center gap-2 rounded-full bg-[#3ea6ff] px-4 py-2.5 text-sm font-semibold text-black"><LogIn size={16}/>Connect Google account</a></div>}
+        <p className="mt-3 text-xs leading-5 text-white/35">The supported account feed is built from channels you subscribe to. YouTube's former Home-activity API parameter is deprecated, so this cannot reproduce YouTube's personalized recommendation algorithm. YouTube watch history is not available through this integration.</p>
+      </section>
+
+      <section className="mt-8 rounded-2xl border border-white/[.07] bg-[#181818] p-5">
         <h2 className="text-lg font-semibold">Playback</h2>
         <div className="mt-4 divide-y divide-white/[.07]">
           <label className="flex items-center justify-between gap-4 py-4"><span><span className="block font-medium">Autoplay videos</span><span className="mt-1 block text-xs text-white/45">Start videos automatically when the watch page opens.</span></span><input type="checkbox" checked={prefs.autoplay} onChange={e=>update({...prefs,autoplay:e.target.checked})} className="h-5 w-5 accent-[#3ea6ff]"/></label>
@@ -105,7 +131,7 @@ export default function SettingsPage() {
         <div className="mt-4 flex flex-wrap gap-3"><button onClick={exportData} className="inline-flex items-center gap-2 rounded-full bg-[#3ea6ff] px-4 py-2.5 text-sm font-semibold text-black"><Download size={16}/>Export data</button><label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#303030] px-4 py-2.5 text-sm font-semibold hover:bg-[#3a3a3a]"><Upload size={16}/>Import data<input type="file" accept="application/json,.json" onChange={importData} className="hidden"/></label></div>
       </section>
       {message&&<p role="status" className="mt-4 rounded-xl bg-[#17251d] p-3 text-sm text-emerald-200">{message}</p>}
-      <p className="mt-7 text-xs leading-5 text-white/30">HF Tube does not currently offer Google sign-in, cloud sync, or light mode. Public video sources may have their own availability and privacy policies.</p>
+      <p className="mt-7 text-xs leading-5 text-white/30">HF Tube does not offer cross-device sync for local playlists and watch history, or light mode. Public video sources may have their own availability and privacy policies.</p>
     </section>
   </main>;
 }
