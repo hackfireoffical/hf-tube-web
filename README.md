@@ -19,8 +19,9 @@ A mobile-first independent video frontend built with Next.js and public Invidiou
 - **Milestone 15:** searchable subscription lists, refreshable subscription feeds with per-channel failure feedback, and playlist search/rename/delete controls.
 - **Milestone 16:** watch-player theater mode, caption language selection, and keyboard shortcuts for play/pause, seeking, mute, and fullscreen.
 - **Milestone 17:** mobile navigation drawer and removal of inactive watch-page action buttons.
+- **Milestone 18:** Google OAuth connection with encrypted browser session cookies and a read-only YouTube subscriptions/uploads feed. This is not the personalized YouTube Home recommendation feed.
 
-Not implemented yet: Google sign-in, official personalized YouTube recommendations, cross-device sync, and theme switching. Subscriptions are stored only in the current browser and are not connected to a Google account. The short-video feed searches public Invidious results and filters videos to 60 seconds or less; it is not an official YouTube Shorts feed, and availability depends on public instances. Related videos and channel pagination depend on the selected Invidious instance exposing the relevant endpoints/data.
+Not implemented yet: official personalized YouTube Home recommendations, YouTube watch-history access, cross-device sync, and theme switching. Subscriptions are stored only in the current browser and are not connected to a Google account. The short-video feed searches public Invidious results and filters videos to 60 seconds or less; it is not an official YouTube Shorts feed, and availability depends on public instances. Related videos and channel pagination depend on the selected Invidious instance exposing the relevant endpoints/data.
 
 ## Stack
 Next.js App Router, TypeScript, Tailwind CSS, Vercel, public Invidious API instances.
@@ -46,8 +47,17 @@ Subscriptions can be searched and the feed can be refreshed. Playlist names can 
 ## Settings and local data
 Playback preferences, watch/search history, subscriptions, and playlists are stored in the current browser. Settings can export/import a JSON backup and clear individual local data categories. Imported data replaces matching categories in the current browser.
 
-## Account features
-Google OAuth is not implemented. Never ask for or store a Google password. YouTube Data API access does not provide the same personalized Home recommendations as the official YouTube app. Watch and search history currently stay in the current browser's local storage. Watch history has its own page. Playlists are also stored only in the current browser.
+## Google account setup
+Google OAuth is optional and requests read-only YouTube access (`youtube.readonly`) plus basic OpenID profile information. It never asks for a Google password. To enable it:
+1. In Google Cloud, create a project and enable YouTube Data API v3.
+2. Configure the OAuth consent screen and create a Web application OAuth client.
+3. Add the exact authorized redirect URI `https://YOUR_DOMAIN/api/auth/google/callback` (also set the same base URL in `NEXT_PUBLIC_APP_URL`).
+4. Add `HF_GOOGLE_CLIENT_ID`, `HF_GOOGLE_CLIENT_SECRET`, `HF_AUTH_SECRET` (at least 32 random characters), and `NEXT_PUBLIC_APP_URL` to Vercel Environment Variables. Never commit or share the client secret or encryption secret.
+5. If the OAuth app is in Testing mode, only listed test users can connect, and Google says the refresh token expires after 7 days. Production use may require Google's verification process for the requested scope.
+
+The account feed reads subscriptions, channel upload playlists, and public video metadata. It currently processes up to the first 30 subscribed channels and three recent uploads per channel. Google session tokens are encrypted into an HttpOnly cookie; no app database stores them. The account connection can be disconnected from Settings, which also attempts to revoke the refresh token.
+
+Important API limitation: YouTube's `activities.list` `home=true` parameter is deprecated, and the API documents a `homeParameterDeprecated` error when the Home activity feed is unavailable. Therefore HF Tube cannot promise or reproduce the personalized Home recommendation algorithm. The account feed is a subscriptions-based alternative, not the official Home feed. YouTube watch history is not available through this integration. Local watch/search history and playlists remain in this browser only.
 
 ## Deploy
 Import this repository into Vercel as a Next.js app. Add `INVIDIOUS_INSTANCES` in Project Settings → Environment Variables if desired. Connect a custom domain in Vercel's Domains settings.
