@@ -11,20 +11,17 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
   let invidiousError = "Invidious unavailable.";
   try {
     const result = await invidiousVideo<any>("/api/v1/videos/" + encodeURIComponent(id));
-    return NextResponse.json({ video: result.data, instance: result.instance, provider: "invidious" });
+    return NextResponse.json({ video: result.data, instance: result.instance, provider: "invidious" }, { headers: { "Cache-Control": "no-store, max-age=0" } });
   } catch (error) {
     invidiousError = error instanceof Error ? error.message : invidiousError;
   }
   try {
     const result = await getPipedVideo(id);
-    return NextResponse.json({ video: result.video, instance: result.instance, provider: "piped", fallback: true });
+    return NextResponse.json({ video: result.video, instance: result.instance, provider: "piped", fallback: true }, { headers: { "Cache-Control": "no-store, max-age=0" } });
   } catch (error) {
     const pipedError = error instanceof Error ? error.message : "Piped unavailable.";
     const embedUrls = getInstances()
-      .filter(instance => {
-        try { return new URL(instance).hostname !== "invidious.tiekoetter.com"; }
-        catch { return false; }
-      })
+      .filter(instance => !instance.toLowerCase().includes("tiekoetter.com"))
       .map(instance => instance + "/embed/" + encodeURIComponent(id));
     return NextResponse.json({
       embedUrls,
