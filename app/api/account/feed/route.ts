@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { clearGoogleSessionCookie, readGoogleSession, refreshGoogleSession, setGoogleSessionCookie } from "@/lib/google-auth";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
 
 async function youtube(path: string, accessToken: string) {
   const response = await fetch("https://www.googleapis.com/youtube/v3/" + path, {
@@ -41,9 +40,9 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const subscriptions = await youtube("subscriptions?part=snippet&mine=true&maxResults=50", fresh.accessToken);
+    const subscriptions = await youtube("subscriptions?part=snippet&mine=true&maxResults=30", fresh.accessToken);
     const subscriptionItems = Array.isArray(subscriptions.items) ? subscriptions.items : [];
-    const channelIds = subscriptionItems.map((item: any) => item.snippet?.resourceId?.channelId).filter(Boolean);
+    const allChannelIds = subscriptionItems.map((item: any) => item.snippet?.resourceId?.channelId).filter(Boolean);\n    const channelIds = allChannelIds.slice(0, 30);
     const channelDetails = channelIds.length
       ? await youtube("channels?part=snippet,contentDetails&id=" + encodeURIComponent(channelIds.join(",")), fresh.accessToken)
       : { items: [] };
@@ -54,7 +53,7 @@ export async function GET(request: NextRequest) {
       uploadsPlaylistId: channel.contentDetails?.relatedPlaylists?.uploads || ""
     }));
     const activeChannels = channels.filter((channel: any) => channel.uploadsPlaylistId);
-    const uploadResults = await inBatches(activeChannels, 5, async (channel: any) => {
+    const uploadResults = await inBatches(activeChannels, 10, async (channel: any) => {
       try {
         const result = await youtube("playlistItems?part=snippet,contentDetails&playlistId=" + encodeURIComponent(channel.uploadsPlaylistId) + "&maxResults=5", fresh.accessToken);
         return (result.items || []).map((item: any) => ({
@@ -102,7 +101,7 @@ export async function GET(request: NextRequest) {
       account: { email: fresh.email, name: fresh.name, picture: fresh.picture },
       channels: channels.map(({ authorId, author, avatar }: any) => ({ authorId, author, avatar })),
       videos,
-      nextPageToken: subscriptions.nextPageToken || null
+      nextPageToken: subscriptions.nextPageToken || null,\n      limitedToFirst30Channels: allChannelIds.length > 30
     });
     if (fresh.accessToken !== session.accessToken) setGoogleSessionCookie(response, fresh);
     return response;
