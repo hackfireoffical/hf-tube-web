@@ -17,6 +17,7 @@ A mobile-first independent video frontend built with Next.js and public Invidiou
 - **Milestone 13:** functional home navigation, expandable desktop sidebar, provider-backed category search, and same-tab video navigation.
 - **Milestone 14:** browser-local playback preferences (autoplay, muted start, default speed), local data clearing, and JSON export/import for local app data.
 - **Milestone 15:** searchable subscription lists, refreshable subscription feeds with per-channel failure feedback, and playlist search/rename/delete controls.
+- **Milestone 16:** watch-player theater mode, caption language selection, and keyboard shortcuts for play/pause, seeking, mute, and fullscreen.
 
 Not implemented yet: Google sign-in, official personalized YouTube recommendations, cross-device sync, and theme switching. Subscriptions are stored only in the current browser and are not connected to a Google account. The short-video feed searches public Invidious results and filters videos to 60 seconds or less; it is not an official YouTube Shorts feed, and availability depends on public instances. Related videos and channel pagination depend on the selected Invidious instance exposing the relevant endpoints/data.
 
@@ -34,6 +35,9 @@ A small fallback list is included. Public instances are community-operated and m
 
 ## Playback and downloads
 The watch page uses direct format URLs returned by the selected Invidious instance; Vercel does not proxy media. Only formats actually returned by the backend are shown. File sizes use provider metadata when available and otherwise a bitrate-based estimate; the interface labels which kind is shown. Some browsers open the media URL instead of saving it automatically. Playlist batch downloads trigger separate browser downloads and may require allowing multiple downloads. The app cannot observe or verify when an external browser download completes. Only download content you have permission to save and follow the source provider's terms.
+
+## Player controls
+The watch player supports theater mode, caption selection when caption tracks are provided by the source, and keyboard shortcuts: Space (play/pause), Left/Right arrows (seek 5 seconds), M (mute), and F (fullscreen). Browser-native controls remain available.
 
 ## Subscription and playlist management
 Subscriptions can be searched and the feed can be refreshed. Playlist names can be searched, renamed, and deleted. These features use browser-local storage.
