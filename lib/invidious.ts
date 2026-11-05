@@ -1,5 +1,4 @@
 const DEFAULT_INSTANCES = [
-  "https://invidious.tiekoetter.com",
   "https://invidious.nerdvpn.de",
   "https://yt.chocolatemoo53.com",
   "https://inv.nadeko.net"
@@ -10,7 +9,12 @@ export function getInstances() {
     .split(",")
     .map(value => value.trim())
     .filter(Boolean);
-  return [...new Set([...configured, ...DEFAULT_INSTANCES].map(value => value.replace(/\/$/, "")))];
+  return [...new Set([...configured, ...DEFAULT_INSTANCES]
+    .map(value => value.replace(/\/$/, ""))
+    .filter(value => {
+      try { return new URL(value).hostname !== "invidious.tiekoetter.com"; }
+      catch { return false; }
+    }))];
 }
 
 export async function invidious<T>(path: string): Promise<{ data: T; instance: string }> {
