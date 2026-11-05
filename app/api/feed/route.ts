@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { invidious } from "@/lib/invidious";
 
-export const dynamic = "force-dynamic";\nexport const revalidate = 0;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function GET() {
   try {
