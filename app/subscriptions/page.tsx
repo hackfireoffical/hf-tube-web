@@ -26,7 +26,6 @@ export default function SubscriptionsPage() {
       if (!active) return;
       const merged = results.flatMap(result => result.status === "fulfilled" ? result.value : []);
       const unique = Array.from(new Map(merged.map(video => [video.videoId, video])).values());
-      unique.sort((a,b) => (b.published || 0) - (a.published || 0));
       setVideos(unique);
       if (!unique.length) setMessage("Your subscribed channels didn't return videos. Public instances may be temporarily unavailable.");
     }).finally(() => { if (active) setLoading(false); });
