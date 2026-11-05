@@ -1,14 +1,11 @@
 "use client";
 import { FormEvent, useEffect, useState } from "react";
 import { ArrowLeft, Search, SlidersHorizontal } from "lucide-react";
-import { useSearchParams } from "next/navigation";
 import type { Video } from "@/lib/types";
 import { formatDuration, formatViews, thumbnail } from "@/lib/types";
 export default function SearchPage() {
-  const params = useSearchParams();
-  const initial = params.get("q") || "";
-  const [query,setQuery]=useState(initial),[sort,setSort]=useState("relevance"),[results,setResults]=useState<Video[]>([]),[loading,setLoading]=useState(false),[error,setError]=useState("");
-  useEffect(()=>{if(initial) void runSearch(initial,sort,1);},[initial]);
+  const [query,setQuery]=useState(""),[sort,setSort]=useState("relevance"),[results,setResults]=useState<Video[]>([]),[loading,setLoading]=useState(false),[error,setError]=useState("");
+  useEffect(()=>{const initial=new URLSearchParams(window.location.search).get("q")||"";if(initial){setQuery(initial);void runSearch(initial,"relevance",1);}},[]);
   async function runSearch(q:string,order:string,page:number) {
     setLoading(true);setError("");
     try {
