@@ -13,9 +13,9 @@ A mobile-first independent video frontend built with Next.js and public Invidiou
 - **Milestone 7:** browser-local playlists, save-to-playlist controls, per-video selection, resolution/size choices, and playlist batch-download actions.
 - **Milestone 10:** live search suggestions plus provider-backed sorting, upload-date, duration, and video/channel type filters.
 - **Milestone 11:** clearer download format labels and size provenance (provider-reported, estimated, or unavailable) on watch and playlist pages.
-- **Milestone 12:** searchable local watch history, video thumbnails, individual history removal, and clear-all confirmation.
+- **Milestone 12:** searchable local watch history, video thumbnails, individual history removal, and clear-all confirmation.\n- **Milestone 13:** functional home navigation, expandable desktop sidebar, provider-backed category search, and same-tab video navigation.\n- **Milestone 14:** browser-local playback preferences (autoplay, muted start, default speed), local data clearing, and JSON export/import for local app data.
 
-Not implemented yet: Google sign-in, official personalized YouTube recommendations, cross-device sync. Subscriptions are stored only in the current browser and are not connected to a Google account. The short-video feed searches public Invidious results and filters videos to 60 seconds or less; it is not an official YouTube Shorts feed, and availability depends on public instances. Related videos and channel pagination depend on the selected Invidious instance exposing the relevant endpoints/data.
+Not implemented yet: Google sign-in, official personalized YouTube recommendations, cross-device sync, and theme switching. Subscriptions are stored only in the current browser and are not connected to a Google account. The short-video feed searches public Invidious results and filters videos to 60 seconds or less; it is not an official YouTube Shorts feed, and availability depends on public instances. Related videos and channel pagination depend on the selected Invidious instance exposing the relevant endpoints/data.
 
 ## Stack
 Next.js App Router, TypeScript, Tailwind CSS, Vercel, public Invidious API instances.
@@ -32,7 +32,7 @@ A small fallback list is included. Public instances are community-operated and m
 ## Playback and downloads
 The watch page uses direct format URLs returned by the selected Invidious instance; Vercel does not proxy media. Only formats actually returned by the backend are shown. File sizes use provider metadata when available and otherwise a bitrate-based estimate; the interface labels which kind is shown. Some browsers open the media URL instead of saving it automatically. Playlist batch downloads trigger separate browser downloads and may require allowing multiple downloads. The app cannot observe or verify when an external browser download completes. Only download content you have permission to save and follow the source provider's terms.
 
-## Account features
+## Settings and local data\nPlayback preferences, watch/search history, subscriptions, and playlists are stored in the current browser. Settings can export/import a JSON backup and clear individual local data categories. Imported data replaces matching categories in the current browser.\n\n## Account features
 Google OAuth is not implemented. Never ask for or store a Google password. YouTube Data API access does not provide the same personalized Home recommendations as the official YouTube app. Watch and search history currently stay in the current browser's local storage. Watch history has its own page. Playlists are also stored only in the current browser.
 
 ## Deploy
