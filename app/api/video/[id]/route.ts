@@ -4,7 +4,7 @@ import { getPipedVideo } from "@/lib/piped";
 
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
-  if (!/^[\\w-]{6,20}$/.test(id)) return NextResponse.json({ error: "Invalid video ID." }, { status: 400 });
+  if (!/^[\w-]{6,20}$/.test(id)) return NextResponse.json({ error: "Invalid video ID." }, { status: 400 });
   let invidiousError = "Invidious unavailable.";
   try {
     const result = await invidiousVideo<any>("/api/v1/videos/" + encodeURIComponent(id));
