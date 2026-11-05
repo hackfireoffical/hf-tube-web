@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { invidious } from "@/lib/invidious";
 
-export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
+export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
   if (!/^[\w-]{3,100}$/.test(id)) {
     return NextResponse.json({ error: "Invalid channel ID." }, { status: 400 });
