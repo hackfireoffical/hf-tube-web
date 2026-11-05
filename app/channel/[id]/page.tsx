@@ -1,53 +1,72 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import type { Video } from "@/lib/types";
 import { formatDuration, formatViews, thumbnail } from "@/lib/types";
 
 type Channel = {
   author?: string;
-  authorId?: string;
-  authorUrl?: string;
   authorThumbnails?: { url: string }[];
   authorBanners?: { url: string }[];
   subCount?: number;
   totalViews?: number;
   description?: string;
-  joined?: number;
-  latestVideos?: Video[];
 };
 
 export default function ChannelPage({ params }: { params: Promise<{ id: string }> }) {
   const [channel, setChannel] = useState<Channel | null>(null);
   const [videos, setVideos] = useState<Video[]>([]);
-  const [error, setError] = useState("");
+  const [channelId, setChannelId] = useState("");
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     let active = true;
-    void params.then(({ id }) => {
+    void params.then(async ({ id }) => {
       if (!active) return;
-      fetch("/api/channel/" + encodeURIComponent(id))
-        .then(async response => {
-          const data = await response.json();
-          if (!response.ok) throw new Error(data.error || "Channel unavailable.");
-          return data;
-        })
-        .then(data => {
-          if (!active) return;
-          setChannel(data.channel);
-          setVideos(data.videos || []);
-        })
-        .catch(reason => {
-          if (active) setError(reason instanceof Error ? reason.message : "Channel unavailable.");
-        })
-        .finally(() => {
-          if (active) setLoading(false);
-        });
+      setChannelId(id);
+      try {
+        const response = await fetch("/api/channel/" + encodeURIComponent(id) + "?page=1");
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Channel unavailable.");
+        if (!active) return;
+        setChannel(data.channel);
+        setVideos(data.videos || []);
+        setHasMore((data.videos || []).length >= 20);
+      } catch (reason) {
+        if (active) setError(reason instanceof Error ? reason.message : "Channel unavailable.");
+      } finally {
+        if (active) setLoading(false);
+      }
     });
     return () => { active = false; };
   }, [params]);
+
+  async function loadMore() {
+    if (!channelId || loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    try {
+      const nextPage = page + 1;
+      const response = await fetch("/api/channel/" + encodeURIComponent(channelId) + "?page=" + nextPage);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Could not load more videos.");
+      const next: Video[] = Array.isArray(data.videos) ? data.videos : [];
+      setVideos(current => {
+        const known = new Set(current.map(video => video.videoId));
+        return [...current, ...next.filter(video => !known.has(video.videoId))];
+      });
+      setPage(nextPage);
+      setHasMore(next.length >= 20);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Could not load more videos.");
+    } finally {
+      setLoadingMore(false);
+    }
+  }
 
   const avatar = channel?.authorThumbnails?.at(-1)?.url;
   const banner = channel?.authorBanners?.at(-1)?.url;
@@ -60,7 +79,7 @@ export default function ChannelPage({ params }: { params: Promise<{ id: string }
       </header>
       <section className="mx-auto max-w-6xl px-4 pt-5 md:px-7">
         {loading && <div className="h-44 animate-pulse rounded-2xl bg-[#202020]" />}
-        {error && <div className="rounded-xl bg-[#211b19] p-5 text-orange-200">{error}</div>}
+        {error && <div className="mb-4 rounded-xl bg-[#211b19] p-4 text-sm text-orange-200">{error}</div>}
         {!loading && !error && channel && <>
           {banner && <div className="h-32 overflow-hidden rounded-2xl bg-[#202020] sm:h-52"><img src={banner} alt="" className="h-full w-full object-cover" /></div>}
           <div className="flex flex-col gap-4 py-7 sm:flex-row sm:items-center">
@@ -83,6 +102,8 @@ export default function ChannelPage({ params }: { params: Promise<{ id: string }
                 <p className="mt-1 text-xs text-white/45">{formatViews(video.viewCount)} · {video.publishedText || ""}</p>
               </a>)}
             </div>}
+          {hasMore && videos.length > 0 && <div className="flex justify-center pb-8"><button onClick={loadMore} disabled={loadingMore} className="inline-flex items-center gap-2 rounded-full bg-[#252525] px-6 py-3 text-sm font-semibold hover:bg-[#333] disabled:opacity-50">{loadingMore && <Loader2 size={16} className="animate-spin" />}{loadingMore ? "Loading…" : "Load more videos"}</button></div>}
+          {!hasMore && videos.length > 0 && <p className="pb-8 text-center text-xs text-white/35">You're all caught up.</p>}
         </>}
       </section>
     </main>
