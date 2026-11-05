@@ -11,7 +11,7 @@ A mobile-first independent video frontend built with Next.js and public Invidiou
 - **Milestone 5:** a vertical, snap-scrolling short-video feed with lazy-loaded playback and muted autoplay where supported.
 - **Milestone 6:** browser-local channel subscriptions, channel subscribe/unsubscribe controls, and a combined subscriptions feed.
 - **Milestone 7:** browser-local playlists, save-to-playlist controls, per-video selection, resolution/size choices, and playlist batch-download actions.
-- **Milestone 10:** live search suggestions plus provider-backed sorting, upload-date filters, and duration filters.
+- **Milestone 10:** live search suggestions plus provider-backed sorting, upload-date, duration, and video/channel type filters.
 
 Not implemented yet: Google sign-in, official personalized YouTube recommendations, cross-device sync. Subscriptions are stored only in the current browser and are not connected to a Google account. The short-video feed searches public Invidious results and filters videos to 60 seconds or less; it is not an official YouTube Shorts feed, and availability depends on public instances. Related videos and channel pagination depend on the selected Invidious instance exposing the relevant endpoints/data.
 
