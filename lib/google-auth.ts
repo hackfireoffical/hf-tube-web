@@ -35,9 +35,9 @@ export function openGoogleSession(value?: string): GoogleSession | null {
     const decipher = createDecipheriv("aes-256-gcm", encryptionKey(), iv);
     decipher.setAuthTag(tag);
     const decoded = Buffer.concat([decipher.update(encrypted), decipher.final()]).toString("utf8");
-    const value = JSON.parse(decoded) as GoogleSession;
-    if (!value.sub || !value.email || !value.accessToken || !Number.isFinite(value.expiresAt)) return null;
-    return value;
+    const parsed = JSON.parse(decoded) as GoogleSession;
+    if (!parsed.sub || !parsed.email || !parsed.accessToken || !Number.isFinite(parsed.expiresAt)) return null;
+    return parsed;
   } catch { return null; }
 }
 
