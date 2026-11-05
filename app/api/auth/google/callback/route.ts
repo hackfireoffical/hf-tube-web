@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
       name: profile.name || profile.email,
       picture: profile.picture,
       accessToken: tokens.access_token,
-      refreshToken: tokens.refresh_token || (old?.sub === profile.sub ? old.refreshToken : undefined),
+      refreshToken: tokens.refresh_token || (old?.sub === profile.sub ? old?.refreshToken : undefined),
       expiresAt: Date.now() + Number(tokens.expires_in || 3600) * 1000
     };
     const response = NextResponse.redirect(new URL("/subscriptions?google=connected", request.url));
