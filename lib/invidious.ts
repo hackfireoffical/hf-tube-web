@@ -39,3 +39,30 @@ export async function invidious<T>(path: string): Promise<{ data: T; instance: s
     throw new Error("No available Invidious instance responded. " + messages.join("; "));
   }
 }
+
+
+export async function invidiousVideo<T extends { formatStreams?: Array<{ url?: string; type?: string }> }>(path: string): Promise<{ data: T; instance: string }> {
+  const instances = getInstances();
+  const controller = new AbortController();
+  const attempts = instances.map(async instance => {
+    const response = await fetch(instance + path, {
+      headers: { "User-Agent": "HF-Tube/0.5 (community frontend)" },
+      cache: "no-store",
+      signal: AbortSignal.any([controller.signal, AbortSignal.timeout(8000)])
+    });
+    if (!response.ok) throw new Error(instance + " returned HTTP " + response.status);
+    const data = await response.json() as T;
+    const formats = Array.isArray(data?.formatStreams) ? data.formatStreams.filter(format => typeof format.url === "string" && format.url.length > 0) : [];
+    if (!formats.length) throw new Error(instance + " returned video details without playable combined formats");
+    return { data, instance };
+  });
+  try {
+    const result = await Promise.any(attempts);
+    controller.abort();
+    return result;
+  } catch (error) {
+    const reasons = error instanceof AggregateError ? error.errors : [error];
+    const messages = reasons.map(reason => reason instanceof Error ? reason.message : "Request failed");
+    throw new Error("No provider returned playable video formats. " + messages.join("; "));
+  }
+}
