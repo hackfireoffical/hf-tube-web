@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { invidiousVideo, getInstances } from "@/lib/invidious";
+import { invidious, getInstances } from "@/lib/invidious";
 import { getPipedVideo } from "@/lib/piped";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +10,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
   if (!/^[\w-]{6,20}$/.test(id)) return NextResponse.json({ error: "Invalid video ID." }, { status: 400 });
   let invidiousError = "Invidious unavailable.";
   try {
-    const result = await invidiousVideo<any>("/api/v1/videos/" + encodeURIComponent(id));
+    const result = await invidious<any>("/api/v1/videos/" + encodeURIComponent(id));
     return NextResponse.json({ video: result.data, instance: result.instance, provider: "invidious" }, { headers: { "Cache-Control": "no-store, max-age=0" } });
   } catch (error) {
     invidiousError = error instanceof Error ? error.message : invidiousError;
@@ -22,7 +22,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
     const pipedError = error instanceof Error ? error.message : "Piped unavailable.";
     const embedUrls = getInstances()
       .filter(instance => !instance.toLowerCase().includes("tiekoetter.com"))
-      .map(instance => instance + "/embed/" + encodeURIComponent(id));
+      .map(instance => "https://www.youtube.com/embed/" + encodeURIComponent(id));
     return NextResponse.json({
       embedUrls,
       error: "The provider APIs are blocking server-side requests. Trying the provider player directly in your browser.",
